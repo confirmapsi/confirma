@@ -1164,6 +1164,9 @@ btnLogout.addEventListener("click", async ()=>{
   }
 });
 
+      let currentUid = null;
+let saveTimer = null;
+
 // A gente vai chamar init() SOMENTE depois do login.
 let appStarted = false;
 
@@ -1242,8 +1245,7 @@ async function saveToCloud(uid, stateObj){
     function load(){
       try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
     }
-    let currentUid = null;
-let saveTimer = null;
+
 
 function save(){
   localStorage.setItem(KEY, JSON.stringify(state));
