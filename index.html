@@ -1,0 +1,1926 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confirma</title>
+
+  <!-- Ícones -->
+  <link rel="icon" type="image/png" href="escudo.png">
+  <link rel="apple-touch-icon" href="escudo.png">
+  <meta name="theme-color" content="#3A5A6B" />
+
+  <style>
+    :root{
+      --bg:#F7F9FB;
+      --card:#FFFFFF;
+      --border:#E3E8EE;
+      --text:#0F172A;
+      --muted:#64748B;
+      --primary:#3A5A6B;
+
+      --ok:#5FA777;
+      --wait:#E6A23C;
+      --no:#D96B6B;
+      --re:#6C8EBF;
+
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --r:16px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .app{
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 16px 14px 96px;
+    }
+
+    /* ===== Topbar ===== */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+    .brand-logo{
+      height: 38px;
+      width:auto;
+      display:block;
+      object-fit:contain;
+    }
+    .subtitle{
+      font-size:12px;
+      color:var(--muted);
+      margin:0;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 46vw;
+    }
+
+    .btn{
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .btn:hover{ box-shadow: var(--shadow); }
+    .btn.primary{
+      background:var(--primary);
+      border-color: var(--primary);
+      color:#fff;
+    }
+    .btn.danger{
+      background: rgba(217,107,107,0.14);
+      border-color: rgba(217,107,107,0.30);
+    }
+
+    .icon{
+      width:16px;height:16px;
+      object-fit:contain;
+      display:block;
+    }
+
+    /* ===== Tabs ===== */
+    .tabs{
+      display:flex;
+      gap:10px;
+      background: rgba(255,255,255,0.70);
+      border:1px solid var(--border);
+      padding:8px;
+      border-radius: 18px;
+      position: sticky;
+      top:0;
+      backdrop-filter: blur(10px);
+      z-index: 20;
+    }
+    .tab{
+      flex:1;
+      text-align:center;
+      padding:10px 8px;
+      border-radius: 14px;
+      font-weight:950;
+      font-size:14px;
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
+      border:1px solid transparent;
+    }
+    .tab.active{
+      background:#fff;
+      color:var(--text);
+      border-color: var(--border);
+    }
+
+    /* ===== Sections ===== */
+    .section{ margin-top: 14px; }
+
+    .headline{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin: 10px 4px 10px;
+      flex-wrap:wrap;
+    }
+    .headline h2{
+      font-size: 22px;
+      margin:0;
+      letter-spacing:-0.3px;
+    }
+    .headline .meta{
+      color:var(--muted);
+      font-size: 13px;
+      white-space:nowrap;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .empty{
+      padding:18px;
+      border:1px dashed #CAD5E2;
+      border-radius: var(--r);
+      color: var(--muted);
+      background: rgba(255,255,255,0.55);
+      text-align:center;
+    }
+
+    /* ===== Date group (Sessões) ===== */
+    .dayGroup{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius: var(--r);
+      overflow:hidden;
+    }
+    .dayHeader{
+      padding: 12px 14px;
+      border-bottom:1px solid var(--border);
+      background: rgba(58,90,107,0.04);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .dayHeader strong{
+      font-size: 14px;
+      letter-spacing:-0.1px;
+    }
+    .dayHeader span{
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .dayBody{
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    /* ===== Session item ===== */
+    .session{
+      border:1px solid var(--border);
+      border-radius: var(--r);
+      background:#fff;
+      padding: 12px;
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:12px;
+    }
+
+    .sessionMain{
+      display:grid;
+      grid-template-columns: 72px 1fr;
+      gap:12px;
+      align-items:start;
+      min-width:0;
+    }
+
+    .timeBox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-top: 2px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px; flex:0 0 auto;
+      margin-top:2px;
+    }
+    .sTime{
+      font-size:16px;
+      font-weight:950;
+      letter-spacing:-0.2px;
+      min-width: 56px;
+    }
+
+    .info{ min-width:0; }
+    .nameRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .sName{
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:-0.2px;
+      margin:0;
+      line-height:1.2;
+      word-break: break-word;
+      overflow-wrap:anywhere;
+      flex:1;
+      min-width:0;
+    }
+
+    .badge{
+      padding:7px 10px;
+      border-radius:999px;
+      font-weight:950;
+      font-size:12px;
+      white-space:nowrap;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      flex:0 0 auto;
+    }
+
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      word-break: break-word;
+      overflow-wrap:anywhere;
+    }
+
+    .sessionSide{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:flex-end;
+      min-width: 260px;
+    }
+
+    .statusSel{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size: 13px;
+      font-weight:950;
+      color: var(--text);
+      outline:none;
+    }
+
+    .actionsGrid{
+      width:100%;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+
+    .mini{
+      padding:10px 10px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-weight:950;
+      font-size:13px;
+      user-select:none;
+    }
+    .mini.primary{
+      background: var(--primary);
+      color:#fff;
+      border-color: var(--primary);
+    }
+    .mini.wait{ background: rgba(230,162,60,0.14); border-color: rgba(230,162,60,0.30); }
+    .mini.no{ background: rgba(217,107,107,0.14); border-color: rgba(217,107,107,0.30); }
+    .mini.re{ background: rgba(108,142,191,0.14); border-color: rgba(108,142,191,0.30); }
+
+    /* ===== Split button (Confirmar + ▼) ===== */
+    .split{
+      display:flex;
+      width:100%;
+      gap:0;
+      border-radius: 14px;
+      overflow:hidden;
+      border:1px solid var(--primary);
+      background: var(--primary);
+    }
+    .split .main{
+      flex:1;
+      border:none;
+      background: transparent;
+      color:#fff;
+      padding:10px 10px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:13px;
+      user-select:none;
+    }
+    .split .more{
+      width: 44px;
+      border:none;
+      background: rgba(255,255,255,0.12);
+      color:#fff;
+      padding:10px 10px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:13px;
+      user-select:none;
+    }
+    .split .main:active,
+    .split .more:active{ transform: translateY(1px); }
+
+    /* ===== Popover menu ===== */
+    .popover{
+      position: fixed;
+      z-index: 999;
+      width: min(320px, 92vw);
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:none;
+    }
+    .popoverHead{
+      padding: 10px 12px;
+      border-bottom:1px solid var(--border);
+      background: rgba(58,90,107,0.04);
+      font-weight:950;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .popoverList{
+      display:flex;
+      flex-direction:column;
+      max-height: 48vh;
+      overflow:auto;
+    }
+    .menuItem{
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      font-size:13px;
+      border-bottom:1px solid rgba(227,232,238,0.8);
+    }
+    .menuItem:last-child{ border-bottom:none; }
+    .menuItem:hover{ background: rgba(15,23,42,0.04); }
+    .menuItem small{
+      color: var(--muted);
+      font-weight:800;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .menuDanger{ color: #b91c1c; }
+
+    /* ===== Forms ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 900px){
+      .grid.two{ grid-template-columns: 1.1fr 0.9fr; }
+    }
+
+    .form-row{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top: 10px;
+    }
+    @media (min-width: 680px){
+      .form-row.cols2{ grid-template-columns: 1fr 1fr; }
+      .form-row.cols3{ grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    label{
+      font-size:12px;
+      font-weight:950;
+      color:#334155;
+      display:block;
+      margin-bottom:6px;
+    }
+    input, select, textarea{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size: 14px;
+      outline:none;
+    }
+    textarea{ min-height: 110px; resize: vertical; }
+    .help{
+      font-size:12px;
+      color: var(--muted);
+      margin-top:6px;
+      line-height:1.35;
+    }
+    .help b{ color:#334155; }
+
+    .rowline{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background:#fff;
+    }
+    .rowline strong{ font-size: 14px; }
+    .rowline small{
+      color: var(--muted);
+      display:block;
+      margin-top:3px;
+      word-break: break-word;
+      overflow-wrap:anywhere;
+    }
+    .rowbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      flex:0 0 auto;
+    }
+
+    /* ===== Patient card + sessions list ===== */
+    .pCard{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius: var(--r);
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .pTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .pName{
+      font-weight:950;
+      font-size:15px;
+      letter-spacing:-0.1px;
+      line-height:1.2;
+      word-break: break-word;
+      overflow-wrap:anywhere;
+      margin:0;
+    }
+    .pMeta{
+      color: var(--muted);
+      font-size:12px;
+      margin-top:4px;
+      word-break: break-word;
+      overflow-wrap:anywhere;
+    }
+    .pSessions{
+      border-top:1px solid rgba(227,232,238,0.8);
+      padding-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .pSessionsTitle{
+      font-weight:950;
+      font-size:12px;
+      color:#334155;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .pSessItem{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 10px;
+      border:1px solid rgba(227,232,238,0.9);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.6);
+    }
+    .pSessItem strong{
+      font-size:13px;
+      letter-spacing:-0.1px;
+    }
+    .pSessItem span{
+      font-size:12px;
+      color: var(--muted);
+      display:block;
+      margin-top:3px;
+    }
+    .pSessBtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      flex:0 0 auto;
+    }
+
+    /* ===== Dialog ===== */
+    dialog{
+      border:none;
+      border-radius: 18px;
+      width: min(760px, 94vw);
+      padding:0;
+    }
+    dialog::backdrop{ background: rgba(15,23,42,0.28); }
+
+    .dlgHead{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+      border-radius: 18px 18px 0 0;
+    }
+    .dlgBody{
+      padding:14px;
+      background:#fff;
+      border-radius: 0 0 18px 18px;
+    }
+    .dlgTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    /* ===== Mobile refinements ===== */
+    @media (max-width: 640px){
+      .app{ padding: 12px 12px 92px; }
+      .subtitle{ display:none; }
+      .brand-logo{ height: 34px; }
+
+      .tabs{
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        top: auto;
+        border-radius: 22px;
+        padding: 8px;
+        box-shadow: var(--shadow);
+      }
+      .tab{
+        padding: 10px 6px;
+        font-size: 13px;
+      }
+
+      .session{
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 12px;
+      }
+      .sessionMain{ grid-template-columns: 64px 1fr; }
+      .sessionSide{
+        min-width: 0;
+        align-items: stretch;
+      }
+      .actionsGrid{ grid-template-columns: 1fr 1fr; }
+      .mini{ padding: 12px 10px; }
+
+      .headline h2{ font-size: 20px; }
+      .headline .meta{ font-size: 12px; }
+
+      .dayBody{ padding: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <img class="brand-logo" src="logo.png" alt="Confirma" />
+        <p class="subtitle">Confirmações rápidas pelo WhatsApp</p>
+      </div>
+
+      <button class="btn primary" id="btnQuickAdd">
+        <img class="icon" src="escudo.png" alt="" aria-hidden="true"> + Sessão
+      </button>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Navegação">
+      <div class="tab active" data-tab="today">Hoje</div>
+      <div class="tab" data-tab="sessions">Sessões</div>
+      <div class="tab" data-tab="patients">Pacientes</div>
+      <div class="tab" data-tab="settings">Config</div>
+    </div>
+
+    <!-- HOJE -->
+    <div class="section" id="tab-today">
+      <div class="headline">
+        <div>
+          <h2 id="todayTitle">Hoje</h2>
+          <div class="meta" id="todayMeta"></div>
+        </div>
+        <div class="meta" id="todayCount"></div>
+      </div>
+
+      <div class="card">
+        <div id="todayList" class="list"></div>
+        <div id="todayEmpty" class="empty" style="display:none;">Nenhuma sessão para hoje.</div>
+      </div>
+    </div>
+
+    <!-- SESSÕES (todas, agrupadas por dia) -->
+    <div class="section" id="tab-sessions" style="display:none;">
+      <div class="headline">
+        <div>
+          <h2>Sessões</h2>
+          <div class="meta">Próximas, em ordem de data e horário</div>
+        </div>
+        <div class="meta" id="sessionsCount"></div>
+      </div>
+
+      <div class="card">
+        <div id="sessionsGroups" class="list"></div>
+        <div id="sessionsEmpty" class="empty" style="display:none;">Nenhuma sessão futura cadastrada.</div>
+      </div>
+    </div>
+
+    <!-- PACIENTES -->
+    <div class="section" id="tab-patients" style="display:none;">
+      <div class="headline">
+        <h2>Pacientes</h2>
+        <div class="meta">Nome + WhatsApp + sessões vinculadas</div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <strong>Novo paciente</strong>
+          <div class="form-row cols2">
+            <div>
+              <label>Nome</label>
+              <input id="pName" placeholder="Ex.: Ana Martins" />
+            </div>
+            <div>
+              <label>WhatsApp (com DDD)</label>
+              <input id="pPhone" placeholder="Ex.: 11999999999" inputmode="numeric" />
+              <div class="help">Somente números. O app adiciona 55 automaticamente se não tiver.</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn primary" id="btnAddPatient">
+              <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Adicionar
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Lista</strong>
+          <div class="help">Ao excluir um paciente, as sessões dele somem junto.</div>
+          <div id="patientsList" class="list" style="margin-top:12px;"></div>
+          <div id="patientsEmpty" class="empty" style="display:none;">Nenhum paciente cadastrado.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="section" id="tab-settings" style="display:none;">
+      <div class="headline">
+        <h2>Config</h2>
+        <div class="meta">Templates + Backup</div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <strong>Variáveis</strong>
+          <div class="help" style="margin-top:8px;">
+            <b>{nome}</b> → nome do paciente.<br>
+            <b>{dia}</b> → data por extenso (ex.: “terça-feira, 12 de março”).<br>
+            <b>{hora}</b> → horário (ex.: “09:00”).<br><br>
+            Dica: sem emojis e sem quebra de linha. O app limpa automaticamente, mas é melhor já escrever certo.
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+
+          <strong>Templates</strong>
+          <div class="help" style="margin-top:6px;">
+            O botão <b>Confirmar</b> usa o template padrão. Para usar outro, toque na setinha <b>▼</b> e escolha.
+          </div>
+
+          <div class="form-row" style="margin-top:12px;">
+            <div>
+              <label>Confirmar (Padrão)</label>
+              <textarea id="tplConfirmDefault"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn primary" id="btnSaveConfirmDefault">
+                <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Salvar
+              </button>
+              <button class="btn" id="btnResetConfirmDefault">Restaurar</button>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top:14px;">
+            <div>
+              <label>Reforço no dia</label>
+              <textarea id="tplReforco"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn primary" id="btnSaveReforco">
+                <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Salvar
+              </button>
+              <button class="btn" id="btnResetReforco">Restaurar</button>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top:14px;">
+            <div>
+              <label>Sem resposta</label>
+              <textarea id="tplSemResposta"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn primary" id="btnSaveSemResposta">
+                <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Salvar
+              </button>
+              <button class="btn" id="btnResetSemResposta">Restaurar</button>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+
+          <strong>Templates extras de confirmação</strong>
+          <div class="help" style="margin-top:6px;">
+            Eles aparecem no menu do <b>Confirmar ▼</b>.
+          </div>
+
+          <div class="form-row cols2">
+            <div>
+              <label>Nome do template</label>
+              <input id="newTplName" placeholder="Ex.: Confirmar (curto)" />
+            </div>
+            <div>
+              <label>Mensagem</label>
+              <input id="newTplText" placeholder="Ex.: Oi {nome}, confirmo {dia} às {hora}." />
+              <div class="help">Use {nome} {dia} {hora}.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn primary" id="btnAddCustomTpl">
+              <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Adicionar
+            </button>
+          </div>
+
+          <div class="help" style="margin-top:10px;"><b>Lista</b></div>
+          <div id="customTplList" class="list" style="margin-top:10px;"></div>
+          <div id="customTplEmpty" class="empty" style="display:none;">Nenhum template extra criado ainda.</div>
+        </div>
+
+        <div class="card">
+          <strong>Backup</strong>
+          <div class="help">Exporte/importe seus dados quando quiser.</div>
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="btnExport">
+              <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Exportar
+            </button>
+            <button class="btn" id="btnImport">
+              <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Importar
+            </button>
+          </div>
+          <div class="help" style="margin-top:10px;">
+            O backup é um arquivo .json. Guarde no Drive/WhatsApp para não perder.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: SESSÃO -->
+    <dialog id="dlgSession">
+      <div class="dlgHead">
+        <div class="dlgTop">
+          <div>
+            <strong style="font-size:16px;">Sessão</strong>
+            <div class="help" style="margin-top:4px;">Avulsa ou semanal (gera ocorrências por 90 dias).</div>
+          </div>
+          <button class="btn" id="btnCloseDlg">Fechar</button>
+        </div>
+      </div>
+
+      <div class="dlgBody">
+        <div class="form-row cols2">
+          <div>
+            <label>Paciente</label>
+            <select id="sPatient"></select>
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select id="sType">
+              <option value="avulsa">Avulsa</option>
+              <option value="semanal">Semanal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row cols3">
+          <div>
+            <label>Data</label>
+            <input id="sDate" type="date" />
+          </div>
+          <div>
+            <label>Hora</label>
+            <input id="sTime" type="time" />
+          </div>
+          <div>
+            <label>Local</label>
+            <select id="sLocal">
+              <option value="Presencial">Presencial</option>
+              <option value="Online">Online</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Observação (opcional)</label>
+            <input id="sNote" placeholder="Ex.: link da sessão / sala / observação de logística" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn primary" id="btnSaveSession">
+            <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Salvar
+          </button>
+          <button class="btn danger" id="btnDeleteSession" style="display:none;">Excluir</button>
+        </div>
+
+        <div class="help" style="margin-top:10px;">
+          Para editar uma sessão, toque no item em Hoje/Sessões.
+        </div>
+      </div>
+    </dialog>
+
+    <!-- MODAL: EDITAR PACIENTE -->
+    <dialog id="dlgPatient">
+      <div class="dlgHead">
+        <div class="dlgTop">
+          <div>
+            <strong style="font-size:16px;">Editar paciente</strong>
+            <div class="help" style="margin-top:4px;">Ao excluir, todas as sessões vinculadas somem.</div>
+          </div>
+          <button class="btn" id="btnClosePatient">Fechar</button>
+        </div>
+      </div>
+
+      <div class="dlgBody">
+        <div class="form-row cols2">
+          <div>
+            <label>Nome</label>
+            <input id="epName" />
+          </div>
+          <div>
+            <label>WhatsApp (com DDD)</label>
+            <input id="epPhone" inputmode="numeric" />
+            <div class="help">Somente números. O app adiciona 55 automaticamente se não tiver.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn primary" id="btnSavePatientEdit">
+            <img class="icon" src="escudo.png" alt="" aria-hidden="true"> Salvar
+          </button>
+          <button class="btn danger" id="btnDeletePatientEdit">Excluir</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- POPOVER (menu de templates do confirmar) -->
+    <div class="popover" id="tplPopover" role="menu" aria-hidden="true">
+      <div class="popoverHead">
+        <span>Confirmar com…</span>
+        <button class="mini" id="btnClosePopover" style="padding:8px 10px;">Fechar</button>
+      </div>
+      <div class="popoverList" id="tplPopoverList"></div>
+    </div>
+
+    <input id="fileImport" type="file" accept="application/json" hidden />
+  </div>
+
+    <script type="module">
+    import { auth, db } from "./firebase.js";
+    console.log("Firebase OK", { auth: !!auth, db: !!db });
+
+    // ====== Storage ======
+    const KEY = "confirma_v4";
+    const state = load() || seedState();
+
+    function seedState(){
+      return {
+        patients: [],
+        sessions: [],
+        statuses: {},                // occurrenceKey -> status
+        templates: defaultTemplates(),// confirmarDefault, reforco, semresposta
+        customConfirmTemplates: [],  // [{id,name,text}]
+      };
+    }
+
+    function defaultTemplates(){
+      return {
+        confirmarDefault: "Oi {nome}, confirmando nossa sessão {dia} às {hora}. Se precisar ajustar, me avise com antecedência.",
+        reforco: "Oi {nome}, lembrando nossa sessão hoje às {hora}.",
+        semresposta: "Oi {nome}, consegue confirmar nossa sessão {dia} às {hora}?"
+      };
+    }
+
+    function load(){
+      try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
+    }
+    function save(){
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }
+
+    // ====== Utils ======
+    const pad2 = n => String(n).padStart(2,"0");
+
+    function formatLongBR(d){
+      const weekdays = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+      const months = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+      return `${weekdays[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]}`;
+    }
+
+    function formatShortDay(d){
+      const w = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+      const m = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+      return `${w[d.getDay()]}, ${pad2(d.getDate())} ${m[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function hmFromDate(d){ return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+    function ymdFromDate(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+
+    function parseYmdHm(ymd, hm){
+      const [Y,M,D] = ymd.split("-").map(Number);
+      const [h,mi] = hm.split(":").map(Number);
+      return new Date(Y, M-1, D, h, mi, 0, 0);
+    }
+
+    function normalizePhone(raw){
+      const digits = String(raw || "").replace(/\D/g,"");
+      if(!digits) return "";
+      if(digits.startsWith("55")) return digits;
+      return "55" + digits;
+    }
+
+    function tryStripEmoji(s){
+      try { return s.replace(/\p{Extended_Pictographic}/gu, ""); }
+      catch { return s; }
+    }
+
+    function sanitizeMessage(text){
+      let t = String(text || "");
+      t = t.replace(/\r?\n|\r/g, " ");
+      t = tryStripEmoji(t);
+      t = t.replace(/\s+/g, " ").trim();
+      return t;
+    }
+
+    function waLink(phone, text){
+      const p = normalizePhone(phone);
+      const cleaned = sanitizeMessage(text);
+      const encoded = encodeURIComponent(cleaned);
+      return `https://wa.me/${p}?text=${encoded}`;
+    }
+
+    function replaceVars(tpl, vars){
+      return String(tpl || "")
+        .replaceAll("{nome}", vars.nome || "")
+        .replaceAll("{dia}", vars.dia || "")
+        .replaceAll("{hora}", vars.hora || "");
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+      }[s]));
+    }
+
+    function formatPhone(p){
+      const d = String(p||"").replace(/\D/g,"");
+      if(d.length < 12) return d;
+      const cc = d.slice(0,2);
+      const ddd = d.slice(2,4);
+      const rest = d.slice(4);
+      if(rest.length===9){
+        return `+${cc} (${ddd}) ${rest.slice(0,5)}-${rest.slice(5)}`;
+      }
+      return `+${cc} (${ddd}) ${rest}`;
+    }
+
+    // ====== Tabs ======
+    document.querySelectorAll(".tab").forEach(el=>{
+      el.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+        el.classList.add("active");
+        const name = el.dataset.tab;
+        ["today","sessions","patients","settings"].forEach(x=>{
+          document.getElementById("tab-"+x).style.display = (x===name) ? "" : "none";
+        });
+        closePopover();
+        if(name==="patients") renderPatients();
+        if(name==="settings") renderSettings();
+        if(name==="today" || name==="sessions") renderAgenda();
+      });
+    });
+
+    // ====== Dates ======
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    document.getElementById("todayTitle").textContent = "Hoje - " + formatLongBR(today);
+    document.getElementById("todayMeta").textContent = formatShortDay(today);
+
+    // ====== Data access ======
+    function patientById(id){
+      return state.patients.find(p=>p.id===id) || null;
+    }
+
+    function sessionById(id){
+      return state.sessions.find(s=>s.id===id) || null;
+    }
+
+    // ====== Status ======
+    function statusOf(key){
+      return state.statuses[key] || "aguardando";
+    }
+    function setStatus(key, st){
+      state.statuses[key] = st;
+      save();
+    }
+    function statusLabel(st){
+      if(st==="confirmado") return "Confirmado";
+      if(st==="semresposta") return "Sem resposta";
+      if(st==="remarcar") return "Remarcar";
+      return "Aguardando";
+    }
+    function dotColor(st){
+      if(st==="confirmado") return "var(--ok)";
+      if(st==="semresposta") return "var(--no)";
+      if(st==="remarcar") return "var(--re)";
+      return "var(--wait)";
+    }
+    function dayMatches(dateObj, dayObj){
+      return dateObj.getFullYear()===dayObj.getFullYear()
+        && dateObj.getMonth()===dayObj.getMonth()
+        && dateObj.getDate()===dayObj.getDate();
+    }
+
+    // ====== Occurrences (90 days) ======
+    function buildOccurrences(){
+      const occ = [];
+      const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()-1);
+      const end = new Date(today.getFullYear(), today.getMonth(), today.getDate()+90);
+
+      for(const s of state.sessions){
+        // se paciente não existe, não gera ocorrência (evita “Paciente removido”)
+        if(!patientById(s.patientId)) continue;
+
+        if(s.type === "semanal"){
+          const base = parseYmdHm(s.date, s.time);
+          let d = new Date(base);
+          while(d < start) d.setDate(d.getDate()+7);
+          while(d <= end){
+            occ.push(makeOcc(s, d));
+            d = new Date(d);
+            d.setDate(d.getDate()+7);
+          }
+        } else {
+          const d = parseYmdHm(s.date, s.time);
+          if(d >= start && d <= end){
+            occ.push(makeOcc(s, d));
+          }
+        }
+      }
+      occ.sort((a,b)=>a.when - b.when);
+      return occ;
+    }
+
+    function makeOcc(session, when){
+      const key = `${session.id}__${ymdFromDate(when)}__${hmFromDate(when)}`;
+      return {
+        key,
+        sessionId: session.id,
+        patientId: session.patientId,
+        when: new Date(when),
+        local: session.local,
+        note: session.note
+      };
+    }
+
+    // ====== Templates: confirm list ======
+    function getAllConfirmTemplates(){
+      const base = [{ id: "default", name: "Padrão", text: state.templates.confirmarDefault }];
+      const extras = (state.customConfirmTemplates || []).slice()
+        .sort((a,b)=>a.name.localeCompare(b.name))
+        .map(t => ({ id: t.id, name: t.name, text: t.text }));
+      return base.concat(extras);
+    }
+
+    // ====== Popover (Confirmar ▼) ======
+    const popover = document.getElementById("tplPopover");
+    const popList = document.getElementById("tplPopoverList");
+    const btnClosePopover = document.getElementById("btnClosePopover");
+
+    let popCtx = null; // { phone, vars, onAfterSend? }
+
+    btnClosePopover.addEventListener("click", closePopover);
+    document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closePopover(); });
+    document.addEventListener("click", (e)=>{
+      if(popover.style.display !== "block") return;
+      const inside = popover.contains(e.target);
+      if(!inside) closePopover();
+    });
+
+    function openPopover(anchorEl, ctx){
+      popCtx = ctx;
+
+      popList.innerHTML = "";
+      const templates = getAllConfirmTemplates();
+
+      templates.forEach(t=>{
+        const item = document.createElement("div");
+        item.className = "menuItem";
+        item.innerHTML = `
+          <div>${escapeHtml(t.name)}</div>
+          <small>Enviar</small>
+        `;
+        item.addEventListener("click", ()=>{
+          closePopover();
+          const msg = replaceVars(t.text, ctx.vars);
+          window.open(waLink(ctx.phone, msg), "_blank", "noopener,noreferrer");
+        });
+        popList.appendChild(item);
+      });
+
+      // Separador / ações
+      const manage = document.createElement("div");
+      manage.className = "menuItem";
+      manage.innerHTML = `<div>Gerenciar templates</div><small>Config</small>`;
+      manage.addEventListener("click", ()=>{
+        closePopover();
+        goToTab("settings");
+        // rolar para a área de templates extras
+        setTimeout(()=>{
+          const el = document.getElementById("newTplName");
+          if(el) el.scrollIntoView({ behavior:"smooth", block:"center" });
+        }, 80);
+      });
+      popList.appendChild(manage);
+
+      // Posicionamento
+      const r = anchorEl.getBoundingClientRect();
+      const margin = 10;
+      const w = 320;
+      const x = Math.min(window.innerWidth - margin - w, Math.max(margin, r.left));
+      const y = Math.min(window.innerHeight - margin - 260, r.bottom + 8);
+
+      popover.style.left = x + "px";
+      popover.style.top = y + "px";
+      popover.style.display = "block";
+      popover.setAttribute("aria-hidden", "false");
+    }
+
+    function closePopover(){
+      popCtx = null;
+      popover.style.display = "none";
+      popover.setAttribute("aria-hidden", "true");
+    }
+
+    function goToTab(name){
+      document.querySelectorAll(".tab").forEach(t=>{
+        if(t.dataset.tab === name) t.click();
+      });
+    }
+
+    // ====== Render: session card ======
+    function renderSessionCard(o){
+      const p = patientById(o.patientId);
+      if(!p) return null;
+
+      const st = statusOf(o.key);
+      const time = hmFromDate(o.when);
+      const dia = formatLongBR(o.when);
+      const hora = time;
+      const vars = { nome: p.name, dia, hora };
+
+      const msgConfirmarDefault = replaceVars(state.templates.confirmarDefault, vars);
+      const msgReforcar = replaceVars(state.templates.reforco, vars);
+      const msgSemResp = replaceVars(state.templates.semresposta, vars);
+      const msgRemarcar  = `Oi ${vars.nome}, precisamos ajustar nosso horário. Pode me dizer dois horários bons para você?`;
+
+      const el = document.createElement("div");
+      el.className = "session";
+      el.innerHTML = `
+        <div class="sessionMain">
+          <div class="timeBox">
+            <div class="dot" style="background:${dotColor(st)}"></div>
+            <div class="sTime">${escapeHtml(time)}</div>
+          </div>
+          <div class="info">
+            <div class="nameRow">
+              <p class="sName">${escapeHtml(p.name)}</p>
+              <span class="badge">${statusLabel(st)}</span>
+            </div>
+            <div class="sub">${escapeHtml(o.local)}${o.note ? " • " + escapeHtml(o.note) : ""}</div>
+          </div>
+        </div>
+
+        <div class="sessionSide">
+          <select class="statusSel" aria-label="Status">
+            <option value="aguardando">Aguardando</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="semresposta">Sem resposta</option>
+            <option value="remarcar">Remarcar</option>
+          </select>
+
+          <div class="actionsGrid">
+            <div class="split">
+              <button class="main" data-act="confirmDefault">Confirmar</button>
+              <button class="more" data-act="confirmMenu">▼</button>
+            </div>
+            <button class="mini wait" data-act="reforcar">Reforçar</button>
+            <button class="mini re" data-act="remarcar">Remarcar</button>
+            <button class="mini no" data-act="semresposta">Sem resposta</button>
+          </div>
+        </div>
+      `;
+
+      // Status select
+      const sel = el.querySelector(".statusSel");
+      sel.value = st;
+      sel.addEventListener("change", ()=>{
+        setStatus(o.key, sel.value);
+        renderAgenda();
+      });
+
+      // Confirmar default
+      el.querySelector('[data-act="confirmDefault"]').addEventListener("click", ()=>{
+        window.open(waLink(p.phone, msgConfirmarDefault), "_blank", "noopener,noreferrer");
+      });
+
+      // Confirmar menu
+      el.querySelector('[data-act="confirmMenu"]').addEventListener("click", (ev)=>{
+        ev.stopPropagation();
+        openPopover(ev.currentTarget, { phone: p.phone, vars });
+      });
+
+      // Reforçar
+      el.querySelector('[data-act="reforcar"]').addEventListener("click", ()=>{
+        window.open(waLink(p.phone, msgReforcar), "_blank", "noopener,noreferrer");
+      });
+
+      // Sem resposta
+      el.querySelector('[data-act="semresposta"]').addEventListener("click", ()=>{
+        window.open(waLink(p.phone, msgSemResp), "_blank", "noopener,noreferrer");
+        setStatus(o.key, "semresposta");
+        renderAgenda();
+      });
+
+      // Remarcar
+      el.querySelector('[data-act="remarcar"]').addEventListener("click", ()=>{
+        window.open(waLink(p.phone, msgRemarcar), "_blank", "noopener,noreferrer");
+        setStatus(o.key, "remarcar");
+        renderAgenda();
+      });
+
+      // Editar sessão ao tocar no cartão (sem conflitar com botões)
+      el.addEventListener("click", (ev)=>{
+        const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toLowerCase() : "";
+        if(tag === "button" || tag === "select" || tag === "option" || tag === "textarea" || tag === "input") return;
+        const s = sessionById(o.sessionId);
+        if(s) openSessionDialog(s);
+      });
+
+      return el;
+    }
+
+    // ====== Render agenda (Hoje + Sessões agrupadas) ======
+    function renderAgenda(){
+      closePopover();
+
+      const occ = buildOccurrences();
+
+      // HOJE
+      const todayItems = occ.filter(o=>dayMatches(o.when, today));
+      document.getElementById("todayCount").textContent = todayItems.length ? `${todayItems.length} sessão(ões)` : "";
+
+      const todayList = document.getElementById("todayList");
+      const todayEmpty = document.getElementById("todayEmpty");
+      todayList.innerHTML = "";
+
+      if(todayItems.length === 0){
+        todayEmpty.style.display = "";
+      } else {
+        todayEmpty.style.display = "none";
+        todayItems.forEach(o=>{
+          const card = renderSessionCard(o);
+          if(card) todayList.appendChild(card);
+        });
+      }
+
+      // SESSÕES (futuras, agrupadas por dia) — exclui hoje
+      const future = occ.filter(o => o.when > new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59));
+      document.getElementById("sessionsCount").textContent = future.length ? `${future.length} futura(s)` : "";
+
+      const groupsWrap = document.getElementById("sessionsGroups");
+      const sessionsEmpty = document.getElementById("sessionsEmpty");
+      groupsWrap.innerHTML = "";
+
+      if(future.length === 0){
+        sessionsEmpty.style.display = "";
+      } else {
+        sessionsEmpty.style.display = "none";
+
+        // agrupar por YYYY-MM-DD
+        const map = new Map();
+        for(const o of future){
+          const key = ymdFromDate(o.when);
+          if(!map.has(key)) map.set(key, []);
+          map.get(key).push(o);
+        }
+
+        // ordenar dias
+        const keys = Array.from(map.keys()).sort((a,b)=>a.localeCompare(b));
+        keys.forEach(k=>{
+          const items = map.get(k).slice().sort((a,b)=>a.when - b.when);
+          const d = parseYmdHm(k, "00:00");
+
+          const group = document.createElement("div");
+          group.className = "dayGroup";
+          group.innerHTML = `
+            <div class="dayHeader">
+              <strong>${escapeHtml(formatLongBR(d))}</strong>
+              <span>${items.length} sessão(ões)</span>
+            </div>
+            <div class="dayBody"></div>
+          `;
+
+          const body = group.querySelector(".dayBody");
+          items.forEach(o=>{
+            const card = renderSessionCard(o);
+            if(card) body.appendChild(card);
+          });
+
+          groupsWrap.appendChild(group);
+        });
+      }
+    }
+
+    // ====== Patients ======
+    document.getElementById("btnAddPatient").addEventListener("click", ()=>{
+      const name = document.getElementById("pName").value.trim();
+      const phone = normalizePhone(document.getElementById("pPhone").value.trim());
+      if(!name || !phone){
+        alert("Preencha nome e WhatsApp (com DDD).");
+        return;
+      }
+      state.patients.push({ id: crypto.randomUUID(), name, phone });
+      document.getElementById("pName").value = "";
+      document.getElementById("pPhone").value = "";
+      save();
+      renderPatients();
+      hydratePatientSelect();
+      renderAgenda();
+    });
+
+    function renderPatients(){
+      closePopover();
+
+      const list = document.getElementById("patientsList");
+      const empty = document.getElementById("patientsEmpty");
+      list.innerHTML = "";
+
+      if(state.patients.length===0){
+        empty.style.display = "";
+        return;
+      }
+      empty.style.display = "none";
+
+      const occ = buildOccurrences(); // para mostrar próximas por paciente
+const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+
+state.patients
+  .slice()
+  .sort((a,b)=>a.name.localeCompare(b.name))
+  .forEach(p=>{
+    const pc = document.createElement("div");
+    pc.className = "pCard";
+
+    const nextOcc = occ
+      .filter(o => o.patientId === p.id && o.when.getTime() >= startOfToday)
+      .slice(0, 5);
+
+          pc.innerHTML = `
+            <div class="pTop">
+              <div style="min-width:0;">
+                <p class="pName">${escapeHtml(p.name)}</p>
+                <div class="pMeta">${escapeHtml(formatPhone(p.phone))}</div>
+              </div>
+              <div class="rowbtns">
+                <button class="mini" data-act="wa">WhatsApp</button>
+                <button class="mini" data-act="edit">Editar</button>
+              </div>
+            </div>
+
+            <div class="pSessions">
+              <div class="pSessionsTitle">
+                <span>Próximas sessões</span>
+                <span style="color:var(--muted); font-weight:900; font-size:12px;">${nextOcc.length ? `${nextOcc.length} exibida(s)` : "—"}</span>
+              </div>
+              <div class="pSessionsList"></div>
+              <div class="help" style="margin:0; display:${nextOcc.length ? "none" : ""};">Nenhuma sessão futura vinculada.</div>
+            </div>
+          `;
+
+          pc.querySelector('[data-act="wa"]').addEventListener("click", ()=>{
+            window.open(`https://wa.me/${p.phone}`, "_blank", "noopener,noreferrer");
+          });
+          pc.querySelector('[data-act="edit"]').addEventListener("click", ()=>{
+            openPatientDialog(p);
+          });
+
+          const psList = pc.querySelector(".pSessionsList");
+          nextOcc.forEach(o=>{
+            const s = sessionById(o.sessionId);
+            if(!s) return;
+
+            const item = document.createElement("div");
+            item.className = "pSessItem";
+            item.innerHTML = `
+              <div style="min-width:0;">
+                <strong>${escapeHtml(formatShortDay(o.when))} • ${escapeHtml(hmFromDate(o.when))}</strong>
+                <span>${escapeHtml(o.local)}${o.note ? " • " + escapeHtml(o.note) : ""}</span>
+              </div>
+              <div class="pSessBtns">
+                <button class="mini" data-act="editSess">Editar</button>
+              </div>
+            `;
+            item.querySelector('[data-act="editSess"]').addEventListener("click", ()=>{
+              openSessionDialog(s);
+            });
+            psList.appendChild(item);
+          });
+
+          list.appendChild(pc);
+        });
+    }
+
+    // ====== Patient edit dialog ======
+    const dlgPatient = document.getElementById("dlgPatient");
+    const btnClosePatient = document.getElementById("btnClosePatient");
+    const btnSavePatientEdit = document.getElementById("btnSavePatientEdit");
+    const btnDeletePatientEdit = document.getElementById("btnDeletePatientEdit");
+    const epName = document.getElementById("epName");
+    const epPhone = document.getElementById("epPhone");
+
+    let editingPatientId = null;
+
+    btnClosePatient.addEventListener("click", ()=> dlgPatient.close());
+
+    function openPatientDialog(p){
+      editingPatientId = p.id;
+      epName.value = p.name || "";
+      epPhone.value = (p.phone || "").replace(/\D/g,"").replace(/^55/,"");
+      dlgPatient.showModal();
+    }
+
+    btnSavePatientEdit.addEventListener("click", ()=>{
+      if(!editingPatientId) return;
+      const name = epName.value.trim();
+      const phone = normalizePhone(epPhone.value.trim());
+      if(!name || !phone){
+        alert("Preencha nome e WhatsApp.");
+        return;
+      }
+      const idx = state.patients.findIndex(x=>x.id===editingPatientId);
+      if(idx>=0){
+        state.patients[idx] = { ...state.patients[idx], name, phone };
+        save();
+        dlgPatient.close();
+        renderPatients();
+        hydratePatientSelect();
+        renderAgenda();
+      }
+    });
+
+    btnDeletePatientEdit.addEventListener("click", ()=>{
+      if(!editingPatientId) return;
+      const p = patientById(editingPatientId);
+      if(!p) return;
+
+      if(confirm(`Excluir paciente "${p.name}" e remover todas as sessões dele?`)){
+        // 1) achar sessões do paciente
+        const sessionsToRemove = state.sessions.filter(s=>s.patientId===editingPatientId).map(s=>s.id);
+        const sessionsToRemoveSet = new Set(sessionsToRemove);
+
+        // 2) remover sessões base
+        state.sessions = state.sessions.filter(s=>s.patientId!==editingPatientId);
+
+        // 3) remover paciente
+        state.patients = state.patients.filter(x=>x.id!==editingPatientId);
+
+        // 4) limpar statuses relacionados
+        const newStatuses = {};
+        for(const [k,v] of Object.entries(state.statuses || {})){
+          const sid = String(k).split("__")[0];
+          if(!sessionsToRemoveSet.has(sid)) newStatuses[k] = v;
+        }
+        state.statuses = newStatuses;
+
+        save();
+        dlgPatient.close();
+        renderPatients();
+        hydratePatientSelect();
+        renderAgenda();
+      }
+    });
+
+    // ====== Sessions dialog ======
+    const dlg = document.getElementById("dlgSession");
+    const btnQuickAdd = document.getElementById("btnQuickAdd");
+    const btnCloseDlg = document.getElementById("btnCloseDlg");
+    const btnSaveSession = document.getElementById("btnSaveSession");
+    const btnDeleteSession = document.getElementById("btnDeleteSession");
+
+    const sPatient = document.getElementById("sPatient");
+    const sType = document.getElementById("sType");
+    const sDate = document.getElementById("sDate");
+    const sTime = document.getElementById("sTime");
+    const sLocal = document.getElementById("sLocal");
+    const sNote = document.getElementById("sNote");
+
+    let editingSessionId = null;
+
+    btnQuickAdd.addEventListener("click", ()=> openSessionDialog());
+    btnCloseDlg.addEventListener("click", ()=> dlg.close());
+
+    function hydratePatientSelect(){
+      sPatient.innerHTML = "";
+      if(state.patients.length===0){
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "Cadastre um paciente primeiro";
+        sPatient.appendChild(opt);
+        return;
+      }
+      state.patients
+        .slice()
+        .sort((a,b)=>a.name.localeCompare(b.name))
+        .forEach(p=>{
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          sPatient.appendChild(opt);
+        });
+    }
+
+    function openSessionDialog(session){
+      closePopover();
+
+      editingSessionId = session?.id || null;
+      hydratePatientSelect();
+
+      sDate.value = session?.date || ymdFromDate(new Date());
+      sTime.value = session?.time || "09:00";
+      sType.value = session?.type || "avulsa";
+      sLocal.value = session?.local || "Presencial";
+      sNote.value = session?.note || "";
+      sPatient.value = session?.patientId || sPatient.value || "";
+
+      btnDeleteSession.style.display = session ? "" : "none";
+      dlg.showModal();
+    }
+
+    btnSaveSession.addEventListener("click", ()=>{
+      if(state.patients.length===0){
+        alert("Cadastre um paciente primeiro.");
+        return;
+      }
+      const patientId = sPatient.value;
+      const date = sDate.value;
+      const time = sTime.value;
+      const type = sType.value;
+      const local = sLocal.value;
+      const note = sNote.value.trim();
+
+      if(!patientId || !date || !time){
+        alert("Preencha paciente, data e hora.");
+        return;
+      }
+
+      if(editingSessionId){
+        const idx = state.sessions.findIndex(x=>x.id===editingSessionId);
+        if(idx>=0){
+          state.sessions[idx] = { ...state.sessions[idx], patientId, date, time, type, local, note };
+        }
+      } else {
+        state.sessions.push({
+          id: crypto.randomUUID(),
+          patientId, date, time, type, local, note,
+          createdAt: Date.now()
+        });
+      }
+      save();
+      dlg.close();
+      renderAgenda();
+      renderPatients(); // para aparecer vinculado ao paciente
+    });
+
+    btnDeleteSession.addEventListener("click", ()=>{
+      if(!editingSessionId) return;
+      const s = sessionById(editingSessionId);
+      if(!s) return;
+
+      if(confirm("Excluir esta sessão?")){
+        // remove base session
+        state.sessions = state.sessions.filter(x=>x.id!==editingSessionId);
+
+        // limpa statuses dessa sessão
+        const newStatuses = {};
+        for(const [k,v] of Object.entries(state.statuses || {})){
+          const sid = String(k).split("__")[0];
+          if(sid !== editingSessionId) newStatuses[k] = v;
+        }
+        state.statuses = newStatuses;
+
+        save();
+        dlg.close();
+        renderAgenda();
+        renderPatients();
+      }
+    });
+
+    // ====== Settings: templates ======
+    const tplConfirmDefault = document.getElementById("tplConfirmDefault");
+    const tplReforco = document.getElementById("tplReforco");
+    const tplSemResposta = document.getElementById("tplSemResposta");
+
+    function renderSettings(){
+      state.templates = state.templates || defaultTemplates();
+      state.templates.confirmarDefault = state.templates.confirmarDefault || defaultTemplates().confirmarDefault;
+      state.templates.reforco = state.templates.reforco || defaultTemplates().reforco;
+      state.templates.semresposta = state.templates.semresposta || defaultTemplates().semresposta;
+
+      tplConfirmDefault.value = state.templates.confirmarDefault;
+      tplReforco.value = state.templates.reforco;
+      tplSemResposta.value = state.templates.semresposta;
+
+      renderCustomTemplates();
+    }
+
+    document.getElementById("btnSaveConfirmDefault").addEventListener("click", ()=>{
+      const cleaned = sanitizeMessage(tplConfirmDefault.value || "");
+      if(!cleaned){ alert("O template de confirmação não pode ficar vazio."); return; }
+      state.templates.confirmarDefault = cleaned;
+      save();
+      alert("Template padrão de confirmação salvo.");
+      renderAgenda();
+    });
+
+    document.getElementById("btnResetConfirmDefault").addEventListener("click", ()=>{
+      if(confirm("Restaurar o template padrão de confirmação?")){
+        state.templates.confirmarDefault = defaultTemplates().confirmarDefault;
+        save();
+        renderSettings();
+        renderAgenda();
+      }
+    });
+
+    document.getElementById("btnSaveReforco").addEventListener("click", ()=>{
+      const cleaned = sanitizeMessage(tplReforco.value || "");
+      if(!cleaned){ alert("O template de reforço não pode ficar vazio."); return; }
+      state.templates.reforco = cleaned;
+      save();
+      alert("Template de reforço salvo.");
+    });
+
+    document.getElementById("btnResetReforco").addEventListener("click", ()=>{
+      if(confirm("Restaurar o template padrão de reforço?")){
+        state.templates.reforco = defaultTemplates().reforco;
+        save();
+        renderSettings();
+      }
+    });
+
+    document.getElementById("btnSaveSemResposta").addEventListener("click", ()=>{
+      const cleaned = sanitizeMessage(tplSemResposta.value || "");
+      if(!cleaned){ alert("O template de 'Sem resposta' não pode ficar vazio."); return; }
+      state.templates.semresposta = cleaned;
+      save();
+      alert("Template de 'Sem resposta' salvo.");
+    });
+
+    document.getElementById("btnResetSemResposta").addEventListener("click", ()=>{
+      if(confirm("Restaurar o template padrão de 'Sem resposta'?")){
+        state.templates.semresposta = defaultTemplates().semresposta;
+        save();
+        renderSettings();
+      }
+    });
+
+    // ====== Custom confirm templates ======
+    const newTplName = document.getElementById("newTplName");
+    const newTplText = document.getElementById("newTplText");
+    const customTplList = document.getElementById("customTplList");
+    const customTplEmpty = document.getElementById("customTplEmpty");
+
+    document.getElementById("btnAddCustomTpl").addEventListener("click", ()=>{
+      const name = (newTplName.value || "").trim();
+      const raw = (newTplText.value || "").trim();
+
+      if(!name || !raw){
+        alert("Preencha nome e mensagem do template.");
+        return;
+      }
+
+      const text = sanitizeMessage(raw);
+      if(!text){
+        alert("A mensagem ficou vazia após limpeza.");
+        return;
+      }
+
+      state.customConfirmTemplates = state.customConfirmTemplates || [];
+      state.customConfirmTemplates.push({ id: crypto.randomUUID(), name, text });
+
+      newTplName.value = "";
+      newTplText.value = "";
+
+      save();
+      renderCustomTemplates();
+      renderAgenda();
+    });
+
+    function renderCustomTemplates(){
+      customTplList.innerHTML = "";
+      const arr = (state.customConfirmTemplates || []).slice().sort((a,b)=>a.name.localeCompare(b.name));
+
+      if(arr.length === 0){
+        customTplEmpty.style.display = "";
+        return;
+      }
+      customTplEmpty.style.display = "none";
+
+      arr.forEach(t=>{
+        const row = document.createElement("div");
+        row.className = "rowline";
+        row.innerHTML = `
+          <div style="min-width:0;">
+            <strong>${escapeHtml(t.name)}</strong>
+            <small>${escapeHtml(t.text)}</small>
+          </div>
+          <div class="rowbtns">
+            <button class="mini" data-act="edit">Editar</button>
+            <button class="mini no" data-act="del">Excluir</button>
+          </div>
+        `;
+
+        row.querySelector('[data-act="edit"]').addEventListener("click", ()=>{
+          const newName = prompt("Nome do template:", t.name);
+          if(newName === null) return;
+          const newText = prompt("Mensagem do template (use {nome} {dia} {hora}):", t.text);
+          if(newText === null) return;
+
+          const name = newName.trim();
+          const text = sanitizeMessage(newText);
+
+          if(!name || !text){
+            alert("Nome e mensagem não podem ficar vazios.");
+            return;
+          }
+
+          const idx = state.customConfirmTemplates.findIndex(x=>x.id===t.id);
+          if(idx>=0){
+            state.customConfirmTemplates[idx] = { ...state.customConfirmTemplates[idx], name, text };
+            save();
+            renderCustomTemplates();
+            renderAgenda();
+          }
+        });
+
+        row.querySelector('[data-act="del"]').addEventListener("click", ()=>{
+          if(confirm(`Excluir template "${t.name}"?`)){
+            state.customConfirmTemplates = state.customConfirmTemplates.filter(x=>x.id!==t.id);
+            save();
+            renderCustomTemplates();
+            renderAgenda();
+          }
+        });
+
+        customTplList.appendChild(row);
+      });
+    }
+
+    // ====== Backup ======
+    document.getElementById("btnExport").addEventListener("click", ()=>{
+      const data = JSON.stringify(state, null, 2);
+      const blob = new Blob([data], { type:"application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `confirma-backup-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    const fileImport = document.getElementById("fileImport");
+    document.getElementById("btnImport").addEventListener("click", ()=>{
+      fileImport.value = "";
+      fileImport.click();
+    });
+
+    fileImport.addEventListener("change", async ()=>{
+      const f = fileImport.files?.[0];
+      if(!f) return;
+      try{
+        const txt = await f.text();
+        const obj = JSON.parse(txt);
+        if(!obj || typeof obj !== "object") throw new Error("Arquivo inválido.");
+        if(!("patients" in obj) || !("sessions" in obj) || !("templates" in obj)) throw new Error("Estrutura inválida.");
+        localStorage.setItem(KEY, JSON.stringify(obj));
+        location.reload();
+      }catch(e){
+        alert("Falha ao importar: " + e.message);
+      }
+    });
+
+    // ====== Init (migração defensiva) ======
+    function init(){
+      state.templates = state.templates || defaultTemplates();
+
+      // migração de versões antigas
+      if(state.templates.confirmar && !state.templates.confirmarDefault){
+        state.templates.confirmarDefault = state.templates.confirmar;
+      }
+
+      state.templates.confirmarDefault = state.templates.confirmarDefault || defaultTemplates().confirmarDefault;
+      state.templates.reforco = state.templates.reforco || defaultTemplates().reforco;
+      state.templates.semresposta = state.templates.semresposta || defaultTemplates().semresposta;
+
+      state.customConfirmTemplates = state.customConfirmTemplates || [];
+      state.statuses = state.statuses || {};
+      state.sessions = state.sessions || [];
+      state.patients = state.patients || [];
+
+      hydratePatientSelect();
+      renderSettings();
+      renderPatients();
+      renderAgenda();
+      save(); // garante persistência do formato atual
+    }
+
+    init();
+  </script>
+</body>
+</html>
