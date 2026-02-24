@@ -741,12 +741,6 @@
       <div class="authSub">Acesso do psicólogo • seus dados ficam vinculados à sua conta</div>
     </div>
 
-    <button class="authBtn google" id="btnGoogle">
-      Entrar com Google
-    </button>
-
-    <div class="authDivider"><span>ou</span></div>
-
     <div class="authGrid">
       <div>
         <label>E-mail</label>
@@ -760,7 +754,6 @@
 
     <div class="authActions">
       <button class="authBtn" id="btnLoginEmail">Entrar</button>
-      <button class="authBtn ghost" id="btnCreateEmail">Criar conta</button>
     </div>
 
     <div class="authError" id="authError" style="display:none;"></div>
@@ -1086,10 +1079,7 @@
 
 import {
   onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -1106,9 +1096,7 @@ const authEmail = document.getElementById("authEmail");
 const authPass  = document.getElementById("authPass");
 const authError = document.getElementById("authError");
 
-const btnGoogle     = document.getElementById("btnGoogle");
 const btnLoginEmail = document.getElementById("btnLoginEmail");
-const btnCreateEmail= document.getElementById("btnCreateEmail");
 const btnLogout     = document.getElementById("btnLogout");
 
 function showAuthError(msg){
@@ -1120,16 +1108,6 @@ function clearAuthError(){
   authError.style.display = "none";
 }
 
-btnGoogle.addEventListener("click", async ()=>{
-  clearAuthError();
-  try{
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  }catch(e){
-    showAuthError(e?.message || "Falha ao entrar com Google.");
-  }
-});
-
 btnLoginEmail.addEventListener("click", async ()=>{
   clearAuthError();
   try{
@@ -1139,19 +1117,6 @@ btnLoginEmail.addEventListener("click", async ()=>{
     await signInWithEmailAndPassword(auth, email, pass);
   }catch(e){
     showAuthError(e?.message || "Falha ao entrar.");
-  }
-});
-
-btnCreateEmail.addEventListener("click", async ()=>{
-  clearAuthError();
-  try{
-    const email = authEmail.value.trim();
-    const pass  = authPass.value;
-    if(!email || !pass) return showAuthError("Preencha e-mail e senha.");
-    if(pass.length < 6) return showAuthError("A senha precisa ter pelo menos 6 caracteres.");
-    await createUserWithEmailAndPassword(auth, email, pass);
-  }catch(e){
-    showAuthError(e?.message || "Falha ao criar conta.");
   }
 });
 
