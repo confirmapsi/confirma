@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Redefinir senha • Confirma</title>
+  <meta name="theme-color" content="#3A5A6B" />
+  <style>
+    :root{
+      --bg:#F7F9FB; --card:#fff; --border:#E3E8EE; --text:#0F172A; --muted:#64748B; --primary:#3A5A6B;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --r:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg); color:var(--text);
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px;
+    }
+    .card{
+      width:min(520px, 96vw);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+    .brand img{height:34px; width:auto;}
+    h1{font-size:18px; margin:0; font-weight:950;}
+    p{margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.35;}
+    label{display:block; font-size:12px; font-weight:950; color:#334155; margin:14px 0 6px;}
+    input{
+      width:100%; padding:11px 12px; border-radius:14px; border:1px solid var(--border);
+      background:#fff; font-size:14px; outline:none;
+    }
+    .row{display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px;}
+    .btn{
+      width:100%;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:14px;
+      padding:12px 12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:14px;
+    }
+    .btn.primary{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#fff;
+    }
+    .msg{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(227,232,238,0.9);
+      background:rgba(255,255,255,0.7);
+      font-weight:900;
+      font-size:12px;
+      color:#0f172a;
+      display:none;
+      word-break:break-word;
+    }
+    .msg.err{
+      border-color: rgba(217,107,107,0.30);
+      background: rgba(217,107,107,0.14);
+      color:#7f1d1d;
+    }
+    .mini{margin-top:10px; text-align:center;}
+    a{color:var(--primary); font-weight:950; text-decoration:none;}
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="logo.png" alt="Confirma">
+      <div>
+        <h1>Redefinir senha</h1>
+        <p>Crie uma nova senha para acessar o Confirma.</p>
+      </div>
+    </div>
+
+    <div id="status" class="msg"></div>
+
+    <label>Nova senha</label>
+    <input id="newPass" type="password" placeholder="mínimo 6 caracteres" autocomplete="new-password" />
+
+    <label>Confirmar nova senha</label>
+    <input id="newPass2" type="password" placeholder="repita a senha" autocomplete="new-password" />
+
+    <div class="row">
+      <button id="btnSet" class="btn primary">Salvar nova senha</button>
+      <button id="btnBack" class="btn">Voltar</button>
+    </div>
+
+    <div class="mini">
+      <a href="./index.html">Ir para o login</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth } from "./firebase.js";
+
+    import {
+      verifyPasswordResetCode,
+      confirmPasswordReset
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const statusEl = document.getElementById("status");
+    const newPass = document.getElementById("newPass");
+    const newPass2 = document.getElementById("newPass2");
+    const btnSet = document.getElementById("btnSet");
+    const btnBack = document.getElementById("btnBack");
+
+    function show(msg, isErr=false){
+      statusEl.textContent = msg;
+      statusEl.className = "msg" + (isErr ? " err" : "");
+      statusEl.style.display = "";
+    }
+
+    function getParam(name){
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    const oobCode = getParam("oobCode");
+
+    // Sem code = link inválido
+    if(!oobCode){
+      show("Link inválido. Abra novamente pelo e-mail de redefinição.", true);
+      btnSet.disabled = true;
+    } else {
+      // Valida o code antes de liberar
+      try{
+        await verifyPasswordResetCode(auth, oobCode);
+        show("Código verificado. Defina sua nova senha.");
+      }catch(e){
+        show("Este link expirou ou já foi usado. Solicite um novo 'Esqueci a senha'.", true);
+        btnSet.disabled = true;
+      }
+    }
+
+    btnSet.addEventListener("click", async ()=>{
+      try{
+        const p1 = newPass.value;
+        const p2 = newPass2.value;
+
+        if(!p1 || !p2) return show("Preencha e confirme a nova senha.", true);
+        if(p1.length < 6) return show("A senha precisa ter pelo menos 6 caracteres.", true);
+        if(p1 !== p2) return show("As senhas não conferem.", true);
+        if(!oobCode) return;
+
+        btnSet.disabled = true;
+        await confirmPasswordReset(auth, oobCode, p1);
+
+        show("Senha alterada com sucesso! Você já pode entrar no app.");
+        setTimeout(()=> location.href = "./index.html", 1200);
+
+      }catch(e){
+        btnSet.disabled = false;
+        show(e?.message || "Falha ao redefinir a senha.", true);
+      }
+    });
+
+    btnBack.addEventListener("click", ()=>{
+      location.href = "./index.html";
+    });
+  </script>
+</body>
+</html>
