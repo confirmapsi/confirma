@@ -1125,21 +1125,24 @@ btnLoginEmail.addEventListener("click", async ()=>{
   }
 });
 
-btnForgotPass.addEventListener("click", async ()=>{
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+btnForgot.addEventListener("click", async ()=>{
   clearAuthError();
   try{
     const email = authEmail.value.trim();
+    if(!email) return showAuthError("Digite seu e-mail para redefinir a senha.");
 
-    if(!email){
-      return showAuthError("Digite seu e-mail para receber o link de redefinição.");
-    }
+    const actionCodeSettings = {
+      // 🔴 TROQUE para a URL real do seu app
+      url: "https://confirmapsi.github.io/confirma/reset.html",
+      handleCodeInApp: true
+    };
 
-    await sendPasswordResetEmail(auth, email);
-
-    showAuthError("Link de redefinição enviado. Verifique seu e-mail.");
-
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    showAuthError("Te enviei um e-mail com o link para redefinir a senha.");
   }catch(e){
-    showAuthError(e?.message || "Falha ao enviar e-mail de redefinição.");
+    showAuthError(e?.message || "Falha ao enviar redefinição.");
   }
 });
 
