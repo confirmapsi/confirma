@@ -758,9 +758,11 @@
 
     <div class="authError" id="authError" style="display:none;"></div>
 
-    <div class="authFoot">
-      <button class="authLink" id="btnLogout" style="display:none;">Sair</button>
-    </div>
+    <div class="authFoot" style="gap:12px;">
+  <button class="authLink" id="btnForgotPass">Esqueci minha senha</button>
+  <button class="authLink" id="btnLogout" style="display:none;">Sair</button>
+</div>
+
   </div>
 </div>
   <div class="app">
@@ -1080,6 +1082,7 @@
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -1097,7 +1100,9 @@ const authPass  = document.getElementById("authPass");
 const authError = document.getElementById("authError");
 
 const btnLoginEmail = document.getElementById("btnLoginEmail");
+const btnForgotPass = document.getElementById("btnForgotPass");
 const btnLogout     = document.getElementById("btnLogout");
+
 
 function showAuthError(msg){
   authError.textContent = msg;
@@ -1119,6 +1124,25 @@ btnLoginEmail.addEventListener("click", async ()=>{
     showAuthError(e?.message || "Falha ao entrar.");
   }
 });
+
+btnForgotPass.addEventListener("click", async ()=>{
+  clearAuthError();
+  try{
+    const email = authEmail.value.trim();
+
+    if(!email){
+      return showAuthError("Digite seu e-mail para receber o link de redefinição.");
+    }
+
+    await sendPasswordResetEmail(auth, email);
+
+    showAuthError("Link de redefinição enviado. Verifique seu e-mail.");
+
+  }catch(e){
+    showAuthError(e?.message || "Falha ao enviar e-mail de redefinição.");
+  }
+});
+
 
 btnLogout.addEventListener("click", async ()=>{
   clearAuthError();
